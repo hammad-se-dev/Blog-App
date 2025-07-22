@@ -1,10 +1,12 @@
 'use client';
-
+import '@/app/globals.css';
 import React from 'react';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { LogOutIcon } from 'lucide-react';
+
 
 function Navbar() {
   const router = useRouter();
@@ -33,12 +35,13 @@ function Navbar() {
             About
           </Link>
           {session && (
-          <button
-            onClick={handleLogout}
-            className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition"
-          >
-            Logout
-          </button>
+          // <button
+          //   onClick={handleLogout}
+          //   className="bg-white text-blue-600 px-4 py-2 rounded hover:bg-gray-100 transition"
+          // >
+          //   Logout
+          // </button>
+          <LogOutIcon onClick={handleLogout} className='w-5 h-5'/>
         )}
 
         </div>

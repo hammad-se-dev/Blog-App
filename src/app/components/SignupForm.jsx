@@ -1,9 +1,8 @@
-// components/SignUpForm.jsx
-'use client'; // This is a client component
+'use client';
 
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation'; // Use navigation for App Router
+import { useRouter } from 'next/navigation';
 
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
@@ -13,30 +12,75 @@ export default function SignUpForm() {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
-    setError(null); // Reset error state
+    setError(null);
 
     const { data, error } = await supabase.auth.signUp({
-      email: email,
-      password: password,
+      email,
+      password,
     });
 
     if (error) {
       setError(error.message);
     } else {
-      // On successful signup, Supabase sends a confirmation email.
-      // You can redirect them to a page telling them to check their email.
-      // Or, if email confirmation is disabled, you can log them in directly.
       alert('Success! Please check your email to confirm your account.');
-      router.push('/login'); // Redirect to login page after signup
+      router.push('/login');
     }
   };
 
   return (
-    <form onSubmit={handleSignUp}>
-      <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
-      <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
-      <button type="submit">Sign Up</button>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-    </form>
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 px-4">
+      <form
+        onSubmit={handleSignUp}
+        className="w-full max-w-sm bg-white p-6 rounded-lg shadow-md space-y-5"
+      >
+        <h2 className="text-2xl font-bold text-center text-blue-600">Sign Up</h2>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+            Email
+          </label>
+          <input
+            id="email"
+            type="email"
+            required
+            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            Password
+          </label>
+          <input
+            id="password"
+            type="password"
+            required
+            className="w-full px-4 py-2 mt-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
+        </div>
+
+        {error && <p className="text-sm text-red-500">{error}</p>}
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+        >
+          Sign Up
+        </button>
+
+        <p className="text-sm text-center text-gray-600">
+          Already have an account?{' '}
+          <a href="/login" className="text-blue-600 hover:underline">
+            Log in
+          </a>
+        </p>
+      </form>
+    </div>
   );
 }
