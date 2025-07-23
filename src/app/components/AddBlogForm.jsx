@@ -5,91 +5,81 @@ import { supabase } from '../../lib/supabase';
 
 export default function AddBlogForm({ onPostAdded }) {
   const [title, setTitle] = useState('');
+  const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
-  // Function to generate excerpt from content
-  const generateExcerpt = (text, maxLength = 150) => {
-    if (!text) return '';
-    const stripped = text.replace(/<[^>]*>/g, ''); // Remove HTML tags if any
-    return stripped.length > maxLength 
-      ? stripped.substring(0, maxLength).trim() + '...'
-      : stripped;
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     setSuccess(null);
-    
-    // Auto-generate excerpt from content
-    const excerpt = generateExcerpt(content);
-    
     const { data, error } = await supabase
       .from('posts')
-      .insert([{ 
-        title, 
-        excerpt, 
-        content,
-        created_at: new Date().toISOString()
-      }])
-      .select();
-      
+      .insert([{ title, excerpt, content }])
+      .select()
+      .single();
     setLoading(false);
     if (error) {
       setError(error.message);
     } else {
       setSuccess('Blog post added!');
       setTitle('');
+      setExcerpt('');
       setContent('');
-      if (onPostAdded) onPostAdded(data?.[0]);
+      if (onPostAdded) onPostAdded(data);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md mx-auto p-4 bg-white rounded shadow mb-8">
-      <h2 className="text-xl font-bold mb-4">Add New Blog Post</h2>
-      
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Title</label>
+    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-8 bg-white/90 rounded-3xl shadow-2xl border border-indigo-100">
+      <h2 className="text-2xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 tracking-tight drop-shadow">
+        Add New Blog Post
+      </h2>
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold text-indigo-700">Title</label>
         <input
           type="text"
           value={title}
           onChange={e => setTitle(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border-2 border-indigo-100 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 px-4 py-3 rounded-xl text-lg transition duration-200 bg-indigo-50 placeholder:text-indigo-300"
           required
+          placeholder="Enter a catchy title..."
         />
       </div>
-      
-      <div className="mb-4">
-        <label className="block mb-1 font-medium">Content</label>
+      <div className="mb-6">
+        <label className="block mb-2 font-semibold text-indigo-700">Excerpt</label>
+        <input
+          type="text"
+          value={excerpt}
+          onChange={e => setExcerpt(e.target.value)}
+          className="w-full border-2 border-indigo-100 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 px-4 py-3 rounded-xl text-lg transition duration-200 bg-indigo-50 placeholder:text-indigo-300"
+          required
+          placeholder="A short summary of your post..."
+        />
+      </div>
+      <div className="mb-8">
+        <label className="block mb-2 font-semibold text-indigo-700">Content</label>
         <textarea
           value={content}
           onChange={e => setContent(e.target.value)}
-          className="w-full border px-3 py-2 rounded"
+          className="w-full border-2 border-indigo-100 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 px-4 py-3 rounded-xl text-lg transition duration-200 bg-indigo-50 placeholder:text-indigo-300 min-h-[120px]"
           rows={5}
           required
+          placeholder="Write your blog content here..."
         />
-        {content && (
-          <p className="text-sm text-gray-600 mt-1">
-            Auto excerpt: {generateExcerpt(content, 50)}...
-          </p>
-        )}
       </div>
-      
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-indigo-700 hover:to-pink-600 transition-all duration-200 text-lg disabled:opacity-60 disabled:cursor-not-allowed"
         disabled={loading}
       >
         {loading ? 'Adding...' : 'Add Post'}
       </button>
-      
-      {error && <p className="text-red-600 mt-2">{error}</p>}
-      {success && <p className="text-green-600 mt-2">{success}</p>}
+      {error && <p className="text-red-600 mt-4 text-center font-semibold">{error}</p>}
+      {success && <p className="text-green-600 mt-4 text-center font-semibold">{success}</p>}
     </form>
   );
 }
