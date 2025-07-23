@@ -1,39 +1,7 @@
-// app/dashboard/page.jsx
 import { getPosts } from '../data/posts';
-import Link from 'next/link';
+import DashboardClient from './DashboardClient';
 
 export default async function Dashboard() {
   const posts = await getPosts();
-
-  return (
-    <>
-      {/* <header className="bg-blue-600 text-white p-4">
-        <nav className="container mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold">My Blog</h1>
-          <div>
-            <Link href="/dashboard" className="mr-4 hover:underline">Home</Link>
-            <Link href="/about" className="hover:underline">About</Link>
-          </div>
-        </nav>
-      </header> */}
-
-      <main className="container mx-auto p-4">
-        <h2 className="text-3xl font-bold mb-6">Blog Posts</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <div key={post.id} className="bg-white p-4 rounded-lg shadow-md">
-              <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
-              <p className="text-gray-600 mb-4">{post.excerpt}</p>
-              <Link
-                href={`/posts/${post.id}`}
-                className="text-blue-600 hover:underline"
-              >
-                Read More
-              </Link>
-            </div>
-          ))}
-        </div>
-      </main>
-    </>
-  );
+  return <DashboardClient posts={posts} />;
 }

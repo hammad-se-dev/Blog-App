@@ -9,16 +9,20 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); //Loading State
   const router = useRouter();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true); // 👈 start loading
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+
+    setLoading(false) // 👈 stop loading after response
 
     if (error) {
       setError(error.message);
@@ -70,9 +74,13 @@ export default function LoginForm() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition flex justify-center items-center gap-2 disabled:opacity-60"
+          disabled={loading}
         >
-          Log In
+          {loading && (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          )}
+          {loading ? 'Logging in...' : 'Log In'}
         </button>
 
         <p className="text-sm text-center text-gray-600">

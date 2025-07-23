@@ -4,15 +4,18 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
+
 export default function SignUpForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false)
   const router = useRouter();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     setError(null);
+    setLoading(true)
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -22,6 +25,7 @@ export default function SignUpForm() {
     if (error) {
       setError(error.message);
     } else {
+      setLoading(false)
       alert('Success! Please check your email to confirm your account.');
       router.push('/login');
     }
@@ -69,9 +73,13 @@ export default function SignUpForm() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition flex justify-center items-center gap-2 disabled:opacity-60"
+          disabled={loading}
         >
-          Sign Up
+          {loading && (
+            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          )}
+          {loading ? 'Creating Accounte...' : 'Signup'}
         </button>
 
         <p className="text-sm text-center text-gray-600">

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { LogOutIcon } from 'lucide-react';
+import useBlogStore from '@/lib/useBlogStore'; // Adjust path as needed
 
 
 function Navbar() {
