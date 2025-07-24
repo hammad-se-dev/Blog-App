@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -10,14 +10,24 @@ export default function AddBlogForm({ onPostAdded }) {
   const [content, setContent] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [userId, setUserId] = useState(null);
   const queryClient = useQueryClient();
+
+  // Fetch the current user's ID on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) setUserId(data.user.id);
+    };
+    fetchUser();
+  }, []);
 
   // Mutation for adding a post
   const { mutate, isPending } = useMutation({
     mutationFn: async ({ title, excerpt, content }) => {
       const { data, error } = await supabase
         .from('posts')
-        .insert([{ title, excerpt, content }])
+        .insert([{ title, excerpt, content, user_id: userId }])
         .select()
         .single();
       if (error) throw new Error(error.message);
@@ -42,6 +52,10 @@ export default function AddBlogForm({ onPostAdded }) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    if (!userId) {
+      setError('User not authenticated. Please log in.');
+      return;
+    }
     mutate({ title, excerpt, content });
   };
 
@@ -92,6 +106,9 @@ export default function AddBlogForm({ onPostAdded }) {
       </button>
       {error && <p className="text-red-600 mt-4 text-center font-semibold">{error}</p>}
       {success && <p className="text-green-600 mt-4 text-center font-semibold">{success}</p>}
+      {success && userId && (
+        <p className="text-indigo-700 mt-2 text-center text-sm">Your user ID: <span className="font-mono break-all">{userId}</span></p>
+      )}
     </form>
   );
 }

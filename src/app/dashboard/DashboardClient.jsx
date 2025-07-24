@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AddBlogForm from '../components/AddBlogForm';
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
@@ -8,39 +8,76 @@ import { supabase } from '../../lib/supabase';
 
 export default function DashboardClient() {
   const [showForm, setShowForm] = useState(false);
-  
+  const [showMyBlogs, setShowMyBlogs] = useState(false);
+  const [userId, setUserId] = useState(null);
+
+  // Fetch the current user's ID on mount
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) setUserId(data.user.id);
+    };
+    fetchUser();
+  }, []);
+
+  // QueryKey includes filter and userId for cache separation
   const { data: postList = [], isLoading, error, refetch } = useQuery({
-    queryKey: ['posts'],
+    queryKey: ['posts', showMyBlogs, userId],
     queryFn: async () => {
-      const { data, error } = await supabase.from('posts').select('*').order('id', { ascending: false });
-      if (error) throw new Error(error.message);
-      return data || [];
+      if (showMyBlogs) {
+        if (!userId) return [];
+        const { data, error } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('user_id', userId)
+          .order('id', { ascending: false });
+        if (error) throw new Error(error.message);
+        return data || [];
+      } else {
+        const { data, error } = await supabase
+          .from('posts')
+          .select('*')
+          .order('id', { ascending: false });
+        if (error) throw new Error(error.message);
+        return data || [];
+      }
     },
+    enabled: showMyBlogs ? !!userId : true,
   });
 
   const handlePostAdded = (newPost) => {
-    // Refetch posts after adding
     refetch();
     setShowForm(false);
   };
 
   return (
     <main className="container mx-auto p-4 min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
-      {/* Add Blog Button */}
-      <div className="flex justify-between items-center mb-8">
+      {/* Add Blog Button and Filter Toggle */}
+      <div className="flex flex-wrap gap-4 justify-between items-center mb-8">
         <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 drop-shadow-lg tracking-tight">
           Blog Posts
         </h2>
-        <button
-          className={`flex items-center gap-2 px-6 py-2 rounded-full shadow-lg border-2 border-indigo-200 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2
-            ${showForm ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600' : 'bg-white text-indigo-700 hover:bg-indigo-50'}`}
-          onClick={() => setShowForm(!showForm)}
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-          </svg>
-          {showForm ? 'Cancel' : 'Add Blog'}
-        </button>
+        <div className="flex gap-4 items-center">
+          <button
+            className={`px-6 py-2 rounded-full shadow-lg border-2 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2
+              ${showMyBlogs ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-300' : 'bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50'}`}
+            onClick={() => setShowMyBlogs((prev) => !prev)}
+            disabled={!userId}
+            title={userId ? '' : 'Log in to use this filter'}
+          >
+            {showMyBlogs ? 'Show All Blogs' : 'Show My Blogs'}
+          </button>
+          <button
+            className={`flex items-center gap-2 px-6 py-2 rounded-full shadow-lg border-2 border-indigo-200 font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2
+              ${showForm ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:from-pink-600 hover:to-purple-600' : 'bg-white text-indigo-700 hover:bg-indigo-50'}`}
+            onClick={() => setShowForm(!showForm)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            {showForm ? 'Cancel' : 'Add Blog'}
+          </button>
+        </div>
       </div>
 
       {/* Show form conditionally */}
@@ -66,7 +103,13 @@ export default function DashboardClient() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
             <circle cx="12" cy="12" r="10" />
           </svg>
-          <p className="text-xl font-medium">No blog posts yet. Click <span className='text-indigo-600 font-bold'>Add Blog</span> to create your first post!</p>
+          <p className="text-xl font-medium">
+            {showMyBlogs ? (
+              <>No blogs found for your account. Click <span className='text-indigo-600 font-bold'>Add Blog</span> to create your first post!</>
+            ) : (
+              <>No blog posts yet. Click <span className='text-indigo-600 font-bold'>Add Blog</span> to create your first post!</>
+            )}
+          </p>
         </div>
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
