@@ -2,35 +2,47 @@
 
 import { useState } from 'react';
 import { supabase } from '../../lib/supabase';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function AddBlogForm({ onPostAdded }) {
   const [title, setTitle] = useState('');
   const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const queryClient = useQueryClient();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-    const { data, error } = await supabase
-      .from('posts')
-      .insert([{ title, excerpt, content }])
-      .select()
-      .single();
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-    } else {
+  // Mutation for adding a post
+  const { mutate, isPending } = useMutation({
+    mutationFn: async ({ title, excerpt, content }) => {
+      const { data, error } = await supabase
+        .from('posts')
+        .insert([{ title, excerpt, content }])
+        .select()
+        .single();
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    onSuccess: (data) => {
       setSuccess('Blog post added!');
       setTitle('');
       setExcerpt('');
       setContent('');
+      setError(null);
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
       if (onPostAdded) onPostAdded(data);
-    }
+    },
+    onError: (error) => {
+      setError(error.message);
+      setSuccess(null);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    mutate({ title, excerpt, content });
   };
 
   return (
@@ -74,9 +86,9 @@ export default function AddBlogForm({ onPostAdded }) {
       <button
         type="submit"
         className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-indigo-700 hover:to-pink-600 transition-all duration-200 text-lg disabled:opacity-60 disabled:cursor-not-allowed"
-        disabled={loading}
+        disabled={isPending}
       >
-        {loading ? 'Adding...' : 'Add Post'}
+        {isPending ? 'Adding...' : 'Add Post'}
       </button>
       {error && <p className="text-red-600 mt-4 text-center font-semibold">{error}</p>}
       {success && <p className="text-green-600 mt-4 text-center font-semibold">{success}</p>}
