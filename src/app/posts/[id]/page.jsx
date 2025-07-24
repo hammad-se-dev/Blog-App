@@ -3,7 +3,8 @@ import { getPostById } from '../../data/posts';
 import { notFound } from 'next/navigation';
 
 export default async function Post({ params }) {
-  const post = await getPostById(params.id);
+  const asyncParams = await params;
+  const post = await getPostById(asyncParams.id);
 
   if (!post) {
     notFound();

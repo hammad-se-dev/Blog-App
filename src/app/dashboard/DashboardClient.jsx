@@ -3,13 +3,26 @@
 import { useState } from 'react';
 import AddBlogForm from '../components/AddBlogForm';
 import Link from 'next/link';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '../../lib/supabase';
 
-export default function DashboardClient({ posts }) {
+export default function DashboardClient() {
   const [showForm, setShowForm] = useState(false);
-  const [postList, setPostList] = useState(posts);
+  // Remove postList and posts props
+
+  // Fetch posts using TanStack Query
+  const { data: postList = [], isLoading, error, refetch } = useQuery({
+    queryKey: ['posts'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('posts').select('*').order('id', { ascending: false });
+      if (error) throw new Error(error.message);
+      return data || [];
+    },
+  });
 
   const handlePostAdded = (newPost) => {
-    setPostList([newPost, ...postList]);
+    // Refetch posts after adding
+    refetch();
     setShowForm(false);
   };
 
@@ -45,7 +58,11 @@ export default function DashboardClient({ posts }) {
       )}
 
       {/* Blog List */}
-      {postList.length === 0 ? (
+      {isLoading ? (
+        <div className="text-center text-gray-400 py-24">Loading posts...</div>
+      ) : error ? (
+        <div className="text-center text-red-500 py-24">Error loading posts: {error.message}</div>
+      ) : postList.length === 0 ? (
         <div className="text-center text-gray-400 py-24">
           <svg className="mx-auto mb-6 w-20 h-20 text-indigo-100" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2" />
