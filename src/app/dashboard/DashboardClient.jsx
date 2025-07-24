@@ -3,13 +3,14 @@
 import { useState, useEffect } from 'react';
 import AddBlogForm from '../components/AddBlogForm';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../../lib/supabase';
 
 export default function DashboardClient() {
   const [showForm, setShowForm] = useState(false);
   const [showMyBlogs, setShowMyBlogs] = useState(false);
   const [userId, setUserId] = useState(null);
+  const queryClient = useQueryClient();
 
   // Fetch the current user's ID on mount
   useEffect(() => {
@@ -44,6 +45,24 @@ export default function DashboardClient() {
     },
     enabled: showMyBlogs ? !!userId : true,
   });
+
+  // Mutation for deleting a post
+  const { mutate: deletePost, isPending: isDeleting } = useMutation({
+    mutationFn: async (postId) => {
+      const { error } = await supabase.from('posts').delete().eq('id', postId);
+      if (error) throw new Error(error.message);
+      return postId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['posts', showMyBlogs, userId] });
+    },
+  });
+
+  const handleDelete = (postId) => {
+    if (window.confirm('Are you sure you want to delete this blog post?')) {
+      deletePost(postId);
+    }
+  };
 
   const handlePostAdded = (newPost) => {
     refetch();
@@ -114,22 +133,36 @@ export default function DashboardClient() {
       ) : (
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {postList.map((post) => (
-            <Link
-              key={post.id}
-              href={`/posts/${post.id}`}
-              className="block bg-white/90 p-6 rounded-3xl shadow-xl border border-indigo-100 group relative overflow-hidden transition-all duration-200 hover:scale-[1.025] hover:shadow-2xl hover:border-pink-200"
-            >
-              <h3 className="text-2xl font-bold mb-3 text-indigo-700 group-hover:text-pink-600 transition-colors duration-200">
-                {post.title}
-              </h3>
-              <p className="text-gray-600 mb-5 line-clamp-3 min-h-[60px] text-base leading-relaxed">
-                {post.excerpt || post.content?.slice(0, 100) + (post.content?.length > 100 ? '...' : '')}
-              </p>
-              <span className="inline-block mt-2 text-base font-semibold text-pink-600 group-hover:text-indigo-700 group-hover:underline transition-colors duration-200">
-                Read More &rarr;
-              </span>
-              <div className="absolute right-0 top-0 w-20 h-20 bg-gradient-to-br from-indigo-100 to-pink-100 opacity-30 rounded-bl-3xl z-0" />
-            </Link>
+            <div key={post.id} className="relative group">
+              <Link
+                href={`/posts/${post.id}`}
+                className="block bg-white/90 p-6 rounded-3xl shadow-xl border border-indigo-100 group relative overflow-hidden transition-all duration-200 hover:scale-[1.025] hover:shadow-2xl hover:border-pink-200"
+              >
+                <h3 className="text-2xl font-bold mb-3 text-indigo-700 group-hover:text-pink-600 transition-colors duration-200">
+                  {post.title}
+                </h3>
+                <p className="text-gray-600 mb-5 line-clamp-3 min-h-[60px] text-base leading-relaxed">
+                  {post.excerpt || post.content?.slice(0, 100) + (post.content?.length > 100 ? '...' : '')}
+                </p>
+                <span className="inline-block mt-2 text-base font-semibold text-pink-600 group-hover:text-indigo-700 group-hover:underline transition-colors duration-200">
+                  Read More &rarr;
+                </span>
+                <div className="absolute right-0 top-0 w-20 h-20 bg-gradient-to-br from-indigo-100 to-pink-100 opacity-30 rounded-bl-3xl z-0" />
+              </Link>
+              {/* Show delete button only for user's own blogs when filter is active */}
+              {showMyBlogs && post.user_id === userId && (
+                <button
+                  onClick={() => handleDelete(post.id)}
+                  disabled={isDeleting}
+                  className="absolute top-4 right-4 z-10 bg-pink-600 hover:bg-pink-700 text-white rounded-full p-2 shadow-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-pink-400"
+                  title="Delete Blog"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
           ))}
         </div>
       )}
