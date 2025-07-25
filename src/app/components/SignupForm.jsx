@@ -3,8 +3,17 @@
 import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(6).required(),
+});
 
 export default function SignUpForm() {
+  const [name,setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -17,6 +26,7 @@ export default function SignUpForm() {
     setLoading(true)
 
     const { data, error } = await supabase.auth.signUp({
+      name,
       email,
       password,
     });
@@ -39,6 +49,14 @@ export default function SignUpForm() {
     await supabase.auth.signInWithOAuth({ provider: 'google' });
   };
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema)
+  });
+
   return (
     <div className="w-full max-w-md mx-auto bg-white/90 p-8 rounded-3xl shadow-2xl border border-indigo-100">
       <form
@@ -49,6 +67,21 @@ export default function SignUpForm() {
           Sign Up
         </h2>
         <div>
+          <label htmlFor="name" className="block text-sm font-semibold text-indigo-700 mb-2">
+            Name
+          </label>
+          <input
+            id="name"
+            type="text"
+            required
+            
+            className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Ron Larson"
+          />
+        </div>
+        <div>
           <label htmlFor="email" className="block text-sm font-semibold text-indigo-700 mb-2">
             Email
           </label>
@@ -56,11 +89,14 @@ export default function SignUpForm() {
             id="email"
             type="email"
             required
+            {...register("email")}
             className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
           />
+          <p>{errors.password?.message}</p>
+
         </div>
         <div>
           <label htmlFor="password" className="block text-sm font-semibold text-indigo-700 mb-2">
@@ -70,11 +106,14 @@ export default function SignUpForm() {
             id="password"
             type="password"
             required
+            {...register("password")}
             className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
           />
+          <p>{errors.password?.message}</p>
+
         </div>
         {error && <p className="text-sm text-red-500 text-center font-semibold">{error}</p>}
         <button

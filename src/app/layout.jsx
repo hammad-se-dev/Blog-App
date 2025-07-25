@@ -11,10 +11,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gray-100">
+      <body className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
         <ReactQueryProvider>
-          <Navbar/>
-          <main className="container mx-auto p-4">{children}</main>
+          <Navbar />
+          <main className="container mx-auto p-4">
+            {children}
+          </main>
         </ReactQueryProvider>
       </body>
     </html>
