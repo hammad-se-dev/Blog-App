@@ -30,6 +30,10 @@ export default function SignUpForm() {
     }
   };
 
+  const handleGoogleSignup = async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
+  };
+
   return (
     <div className="w-full max-w-md mx-auto bg-white/90 p-8 rounded-3xl shadow-2xl border border-indigo-100">
       <form
@@ -77,6 +81,13 @@ export default function SignUpForm() {
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           )}
           {loading ? 'Creating Account...' : 'Signup'}
+        </button>
+        <button
+          type="button"
+          onClick={handleGoogleSignup}
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+        >
+          Sign up with Google
         </button>
         <p className="text-sm text-center text-gray-600 mt-4">
           Already have an account?{' '}

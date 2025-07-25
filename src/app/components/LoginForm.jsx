@@ -31,6 +31,9 @@ export default function LoginForm() {
       router.refresh();
     }
   };
+  const handleGoogleSignin = async () => {
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
+  };
 
   return (
     <div className="w-full max-w-md mx-auto bg-white/90 p-8 rounded-3xl shadow-2xl border border-indigo-100">
@@ -79,6 +82,14 @@ export default function LoginForm() {
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           )}
           {loading ? 'Logging in...' : 'Log In'}
+        </button>
+        {/* signin with google */}
+        <button
+          type="button"
+          onClick={handleGoogleSignin}
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+        >
+          login with Google
         </button>
         <p className="text-sm text-center text-gray-600 mt-4">
           Don&apos;t have an account?{' '}
