@@ -15,7 +15,8 @@ export default function RootLayout({ children }) {
         <ReactQueryProvider>
         <div className="sticky top-0 z-50 bg-white shadow-md">
             <Navbar />
-          </div>          <main className="container mx-auto p-4">
+          </div>          
+          <main className="container mx-auto p-4">
             {children}
           </main>
         </ReactQueryProvider>
