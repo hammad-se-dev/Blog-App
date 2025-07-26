@@ -1,137 +1,72 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import useBlogStore from '../store/blogStore'; // 👈 import your Zustand store
+import { ToastContainer, toast } from 'react-toastify';
 
-export default function AddBlogForm({ onPostAdded, postToEdit }) {
+
+export default function AddBlogForm() {
   const [title, setTitle] = useState('');
-  const [excerpt, setExcerpt] = useState('');
   const [content, setContent] = useState('');
-  const [userId, setUserId] = useState(null);
-  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const queryClient = useQueryClient();
-
-  // Fetch user ID once
-  useEffect(() => {
-    const fetchUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      if (data?.user) setUserId(data.user.id);
-    };
-    fetchUser();
-  }, []);
-
-  // Pre-fill form if editing
-  useEffect(() => {
-    if (postToEdit) {
-      setTitle(postToEdit.title || '');
-      setExcerpt(postToEdit.excerpt || '');
-      setContent(postToEdit.content || '');
-    }
-  }, [postToEdit]);
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: async ({ title, excerpt, content }) => {
-      if (postToEdit) {
-        // UPDATE existing post
-        const { data, error } = await supabase
-          .from('posts')
-          .update({ title, excerpt, content })
-          .eq('id', postToEdit.id)
-          .select()
-          .single();
-        if (error) throw new Error(error.message);
-        return data;
-      } else {
-        // INSERT new post
-        const { data, error } = await supabase
-          .from('posts')
-          .insert([{ title, excerpt, content, user_id: userId }])
-          .select()
-          .single();
-        if (error) throw new Error(error.message);
-        return data;
-      }
-    },
-    
-    onSuccess: (data) => {
-      setSuccess(postToEdit ? 'Post updated!' : 'Post added!');
-      setTitle('');
-      setExcerpt('');
-      setContent('');
-      setError(null);
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      if (onPostAdded) onPostAdded(data);
-    },
-    onError: (error) => {
-      setError(error.message);
-      setSuccess(null);
-    },
-  });
+  const addPost = useBlogStore((state) => state.addPost);
+  const generateExcerpt = (text, maxLength = 150) => {
+    if (!text) return '';
+    const stripped = text.replace(/<[^>]*>/g, '');
+    return stripped.length > maxLength
+      ? stripped.substring(0, maxLength).trim() + '...'
+      : stripped;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    setError(null);
-    setSuccess(null);
-    mutate({ title, excerpt, content });
+    
+    const excerpt = generateExcerpt(content);
+    const newPost = {
+      id: Date.now(), // mock ID
+      title,
+      content,
+      excerpt,
+      created_at: new Date().toISOString(),
+    };
+    
+    addPost(newPost);
+    setTitle('');
+    setContent('');
+    setSuccess('Blog post added!');
+    toast(success)
   };
+  
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-lg mx-auto p-8 bg-white/90 rounded-3xl shadow-2xl border border-indigo-100">
-      <h2 className="text-2xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 tracking-tight drop-shadow">
-        {postToEdit ? 'Edit Blog Post' : 'Add New Blog Post'}
-      </h2>
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow mb-8 max-w-md mx-auto">
+      <h2 className="text-xl font-bold mb-4">Add Blog Post</h2>
+      
+      <input
+        type="text"
+        placeholder="Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        className="w-full border p-2 rounded mb-4"
+        required
+      />
 
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold text-indigo-700">Title</label>
-        <input
-          type="text"
-          value={title}
-          onChange={e => setTitle(e.target.value)}
-          className="w-full border-2 border-indigo-100 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 px-4 py-3 rounded-xl text-lg transition duration-200 bg-indigo-50 placeholder:text-indigo-300"
-          required
-          placeholder="Enter a catchy title..."
-        />
-      </div>
+      <textarea
+        placeholder="Content"
+        value={content}
+        onChange={(e) => setContent(e.target.value)}
+        className="w-full border p-2 rounded mb-4"
+        rows={5}
+        required
+      />
 
-      <div className="mb-6">
-        <label className="block mb-2 font-semibold text-indigo-700">Excerpt</label>
-        <input
-          type="text"
-          value={excerpt}
-          onChange={e => setExcerpt(e.target.value)}
-          className="w-full border-2 border-indigo-100 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 px-4 py-3 rounded-xl text-lg transition duration-200 bg-indigo-50 placeholder:text-indigo-300"
-          required
-          placeholder="A short summary of your post..."
-        />
-      </div>
-
-      <div className="mb-8">
-        <label className="block mb-2 font-semibold text-indigo-700">Content</label>
-        <textarea
-          value={content}
-          onChange={e => setContent(e.target.value)}
-          className="w-full border-2 border-indigo-100 focus:border-pink-400 focus:ring-2 focus:ring-pink-100 px-4 py-3 rounded-xl text-lg transition duration-200 bg-indigo-50 placeholder:text-indigo-300 min-h-[120px]"
-          rows={5}
-          required
-          placeholder="Write your blog content here..."
-        />
-      </div>
-
-      <button
-        type="submit"
-        className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-indigo-700 hover:to-pink-600 transition-all duration-200 text-lg disabled:opacity-60 disabled:cursor-not-allowed"
-        disabled={isPending}
-      >
-        {isPending ? (postToEdit ? 'Updating...' : 'Adding...') : (postToEdit ? 'Update Post' : 'Add Post')}
+      <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+        Add Post
       </button>
 
-      {error && <p className="text-red-600 mt-4 text-center font-semibold">{error}</p>}
-      {success && <p className="text-green-600 mt-4 text-center font-semibold">{success}</p>}
-      {!postToEdit && success && userId && (
-        <p className="text-indigo-700 mt-2 text-center text-sm">Your user ID: <span className="font-mono break-all">{userId}</span></p>
-      )}
+      {/* {success && <p className="text-green-600 mt-2">{success}</p>} */}
+      <ToastContainer />
+
     </form>
   );
 }
