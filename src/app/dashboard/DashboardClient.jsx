@@ -154,10 +154,10 @@ export default function DashboardClient() {
           No blog posts yet.
         </div>
       ) : (
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 items-stretch">
           {postList.map((post) => (
-            <div key={post.id} className="relative group">
-              <div className="bg-white/90 p-6 rounded-3xl shadow-xl border border-indigo-100 group relative overflow-hidden transition-all duration-200 hover:scale-[1.025] hover:shadow-2xl hover:border-pink-200">
+            <div key={post.id} className="relative group h-full">
+              <div className="h-full flex flex-col justify-between bg-white/90 p-6 rounded-3xl shadow-xl border border-indigo-100 group relative overflow-hidden transition-all duration-200 hover:scale-[1.025] hover:shadow-2xl hover:border-pink-200">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-2xl font-bold text-indigo-700 group-hover:text-pink-600 transition-colors duration-200 pr-4">
                     <Link href={`/posts/${post.id}`}>{post.title}</Link>
