@@ -13,7 +13,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
         <ReactQueryProvider>
-        <div className="sticky top-0 z-50 bg-white shadow-md">
+          <div className="sticky top-0 z-50 bg-white shadow-md">
             <Navbar />
           </div>          
           <main className="container mx-auto p-4">
