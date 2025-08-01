@@ -112,9 +112,9 @@ function Navbar() {
           <Link href="/" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
             Home
           </Link>
-          <Link href="/dashboard" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
+          {/* <Link href="/dashboard" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
             Dashboard
-          </Link>
+          </Link> */}
           <Link href="/about" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
             About
           </Link>

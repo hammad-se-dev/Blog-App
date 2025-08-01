@@ -136,12 +136,12 @@ export default function AddBlogForm({ onPostAdded, postToEdit }) {
           {postToEdit ? 'Edit Blog Post' : 'Add New Blog Post'}
         </h2>
 
-        {/* Debug info - remove in production */}
+        {/* Debug info - remove in production
         {process.env.NODE_ENV === 'development' && (
           <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
             <strong>Debug:</strong> User ID: {userId || 'Not set'}
           </div>
-        )}
+        )} */}
 
         <div className="mb-6">
           <label className="block mb-2 font-semibold text-indigo-700">

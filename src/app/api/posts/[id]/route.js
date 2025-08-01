@@ -1,134 +1,60 @@
-// /src/app/api/posts/[id]/route.js
 import { NextResponse } from 'next/server';
-import clientPromise from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import { connectDB } from '@/lib/mongodb';
+import Post from '@/models/post';
 
 // GET - Get single post
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   try {
-    const { id } = params;
-
-    if (!id || id === 'undefined') {
-      return NextResponse.json({ 
-        message: 'Post ID is required' 
-      }, { status: 400 });
-    }
-
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ 
-        message: 'Invalid post ID format' 
-      }, { status: 400 });
-    }
-
-    const client = await clientPromise;
-    const db = client.db();
-    const posts = db.collection('posts');
-
-    const post = await posts.findOne({ _id: new ObjectId(id) });
+    const { params } = context; // ✅ context is synchronous
+    await connectDB();
+    const post = await Post.findById(params.id);
 
     if (!post) {
-      return NextResponse.json({ 
-        message: 'Post not found' 
-      }, { status: 404 });
+      return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
-
     return NextResponse.json(post, { status: 200 });
-
   } catch (error) {
     console.error('GET /api/posts/[id] error:', error);
-    return NextResponse.json({ 
-      message: 'Server error', 
-      error: error.message 
-    }, { status: 500 });
+    return NextResponse.json({ message: 'Server error', error: error.message }, { status: 500 });
   }
 }
 
 // PUT - Update existing post
-export async function PUT(req, { params }) {
+export async function PUT(req, context) {
   try {
-    const { id } = params;
+    const { params } = context;
+    await connectDB();
     const { title, excerpt, content } = await req.json();
 
-    if (!title || !content) {
-      return NextResponse.json({ 
-        message: 'Title and content are required' 
-      }, { status: 400 });
-    }
-
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ 
-        message: 'Invalid post ID format' 
-      }, { status: 400 });
-    }
-
-    const client = await clientPromise;
-    const db = client.db();
-    const posts = db.collection('posts');
-
-    const result = await posts.updateOne(
-      { _id: new ObjectId(id) },
-      { 
-        $set: { 
-          title: title.trim(), 
-          excerpt: excerpt ? excerpt.trim() : '', 
-          content: content.trim(), 
-          updatedAt: new Date() 
-        } 
-      }
+    const updatedPost = await Post.findByIdAndUpdate(
+      params.id,
+      { title, excerpt, content },
+      { new: true }
     );
 
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ 
-        message: 'Post not found' 
-      }, { status: 404 });
+    if (!updatedPost) {
+      return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
-
-    return NextResponse.json({ 
-      message: 'Post updated successfully',
-      modifiedCount: result.modifiedCount 
-    }, { status: 200 });
-
+    return NextResponse.json(updatedPost, { status: 200 });
   } catch (error) {
     console.error('PUT /api/posts/[id] error:', error);
-    return NextResponse.json({ 
-      message: 'Server error', 
-      error: error.message 
-    }, { status: 500 });
+    return NextResponse.json({ message: 'Server error', error: error.message }, { status: 500 });
   }
 }
 
 // DELETE - Delete a post
-export async function DELETE(req, { params }) {
+export async function DELETE(req, context) {
   try {
-    const { id } = params;
+    const { params } = context;
+    await connectDB();
+    const deletedPost = await Post.findByIdAndDelete(params.id);
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ 
-        message: 'Invalid post ID format' 
-      }, { status: 400 });
+    if (!deletedPost) {
+      return NextResponse.json({ message: 'Post not found' }, { status: 404 });
     }
-
-    const client = await clientPromise;
-    const db = client.db();
-    const posts = db.collection('posts');
-
-    const result = await posts.deleteOne({ _id: new ObjectId(id) });
-
-    if (result.deletedCount === 0) {
-      return NextResponse.json({ 
-        message: 'Post not found' 
-      }, { status: 404 });
-    }
-
-    return NextResponse.json({ 
-      message: 'Post deleted successfully' 
-    }, { status: 200 });
-
+    return NextResponse.json({ message: 'Post deleted successfully' }, { status: 200 });
   } catch (error) {
     console.error('DELETE /api/posts/[id] error:', error);
-    return NextResponse.json({ 
-      message: 'Server error', 
-      error: error.message 
-    }, { status: 500 });
+    return NextResponse.json({ message: 'Server error', error: error.message }, { status: 500 });
   }
 }
