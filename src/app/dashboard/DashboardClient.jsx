@@ -96,9 +96,14 @@ export default function DashboardClient() {
                 showMyBlogs
                   ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white border-pink-300"
                   : "bg-white text-indigo-700 border-indigo-200 hover:bg-indigo-50"
-              }`}
-            onClick={() => setShowMyBlogs((prev) => !prev)}
-            disabled={!userId}
+              } ${!userId ? "opacity-60 cursor-not-allowed" : ""}`}
+            onClick={() => {
+              if (!userId) {
+                alert("⚠️ Please log in to view your blogs!");
+                return;
+              }
+              setShowMyBlogs((prev) => !prev);
+            }}
             title={userId ? "" : "Log in to use this filter"}
           >
             {showMyBlogs ? "Show All Blogs" : "Show My Blogs"}
@@ -134,14 +139,7 @@ export default function DashboardClient() {
         </div>
       </div>
 
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="mb-4 p-2 bg-gray-100 rounded text-xs">
-          <strong>Debug:</strong> User ID: {userId || 'Not set'} | 
-          Show My Blogs: {showMyBlogs.toString()} | 
-          Posts Count: {postList.length}
-        </div>
-      )}
+    
 
       {showForm && (
         <div className="mb-10 animate-fade-in">
@@ -174,7 +172,7 @@ export default function DashboardClient() {
                   <h3 className="text-2xl font-bold text-indigo-700 group-hover:text-pink-600 transition-colors duration-200 pr-4">
                     <Link href={`/posts/${post._id}`}>{post.title}</Link>
                   </h3>
-                  {userId && post.user_id === userId && (
+                  {showMyBlogs && userId && post.user_id === userId && (
                     <div className="flex gap-2 flex-shrink-0">
                       {/* Edit Button */}
                       <button
