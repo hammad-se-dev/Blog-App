@@ -1,7 +1,7 @@
 'use client';
 import '@/app/globals.css';
 import React from 'react';
-import { supabase } from '@/lib/supabase';
+// import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
@@ -14,14 +14,14 @@ function Navbar() {
   const [showProfile, setShowProfile] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      if (data.session?.user) {
-        setUserInfo(data.session.user);
-      }
-    });
-  }, []);
+  // useEffect(() => {
+  //   supabase.auth.getSession().then(({ data }) => {
+  //     setSession(data.session);
+  //     if (data.session?.user) {
+  //       setUserInfo(data.session.user);
+  //     }
+  //   });
+  // }, []);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();

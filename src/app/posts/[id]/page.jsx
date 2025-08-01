@@ -1,4 +1,4 @@
-
+// /src/app/posts/[id]/page.jsx
 import { getPostById } from '../../data/posts';
 import { notFound } from 'next/navigation';
 

@@ -1,58 +1,56 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+// /src/app/data/posts.js
 
 export async function getPosts() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        get(name) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name, value, options) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name, options) {
-          cookieStore.set({ name, value: '', ...options });
-        },
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/posts`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    }
-  );
+      cache: 'no-store', // Ensure fresh data on each request
+    });
 
-  const { data, error } = await supabase.from('posts').select('*');
-  if (error) {
+    if (!response.ok) {
+      console.error('Failed to fetch posts:', response.status);
+      return [];
+    }
+
+    const posts = await response.json();
+    return posts || [];
+  } catch (error) {
     console.error('Error fetching posts:', error);
     return [];
   }
-  return data || [];
 }
 
 export async function getPostById(id) {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      cookies: {
-        get(name) {
-          return cookieStore.get(name)?.value;
-        },
-        set(name, value, options) {
-          cookieStore.set({ name, value, ...options });
-        },
-        remove(name, options) {
-          cookieStore.set({ name, value: '', ...options });
-        },
-      },
+  try {
+    if (!id || id === 'undefined') {
+      console.error('Invalid post ID:', id);
+      return null;
     }
-  );
 
-  const { data, error } = await supabase.from('posts').select('*').eq('id', id).single();
-  if (error) {
-    console.error('Error fetching post:', error);
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/posts/${id}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store', // Ensure fresh data on each request
+    });
+
+    if (!response.ok) {
+      if (response.status === 404) {
+        console.log('Post not found:', id);
+        return null;
+      }
+      console.error('Failed to fetch post:', response.status);
+      return null;
+    }
+
+    const post = await response.json();
+    return post || null;
+  } catch (error) {
+    console.error('Error fetching post by ID:', error);
     return null;
   }
-  return data || null;
 }
