@@ -87,15 +87,15 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProfile]);
 
-  if (loading) {
-    return (
-      <nav className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-8 py-4 shadow-xl rounded-b-2xl">
-        <div className="container mx-auto flex justify-center items-center">
-          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-        </div>
-      </nav>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <nav className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-8 py-4 shadow-xl rounded-b-2xl">
+  //       <div className="container mx-auto flex justify-center items-center">
+  //         <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+  //       </div>
+  //     </nav>
+  //   );
+  // }
 
   return (
     <nav className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-8 py-4 shadow-xl rounded-b-2xl">
