@@ -5,82 +5,67 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { LogOutIcon } from 'lucide-react';
+import { supabase } from '@/lib/supabase'; // Import supabase
 
 function Navbar() {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in by looking for token and user data
-    const token = localStorage.getItem('token');
-    const user = localStorage.getItem('user');
-    
-    if (token && user) {
-      try {
-        const userData = JSON.parse(user);
-        setUserInfo(userData);
+    // Get initial session
+    const getInitialSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user) {
+        setUserInfo(session.user);
         setIsLoggedIn(true);
-        console.log('Navbar - User logged in:', userData); // Debug log
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        // Clear invalid data
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        console.log('Navbar - User logged in:', session.user);
+      } else {
         setIsLoggedIn(false);
         setUserInfo(null);
       }
-    } else {
-      setIsLoggedIn(false);
-      setUserInfo(null);
-    }
-  }, []); // Only run on mount
+      setLoading(false);
+    };
 
-  // Listen for storage changes (when user logs in/out in another tab)
-  useEffect(() => {
-    const handleStorageChange = (e) => {
-      if (e.key === 'token' || e.key === 'user') {
-        // Recheck authentication status
-        const token = localStorage.getItem('token');
-        const user = localStorage.getItem('user');
+    getInitialSession();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event, session?.user?.email);
         
-        if (token && user) {
-          try {
-            const userData = JSON.parse(user);
-            setUserInfo(userData);
-            setIsLoggedIn(true);
-          } catch (error) {
-            setIsLoggedIn(false);
-            setUserInfo(null);
-          }
+        if (session?.user) {
+          setUserInfo(session.user);
+          setIsLoggedIn(true);
         } else {
           setIsLoggedIn(false);
           setUserInfo(null);
+          setShowProfile(false);
         }
+        setLoading(false);
       }
-    };
+    );
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    // Cleanup subscription
+    return () => {
+      subscription?.unsubscribe();
+    };
   }, []);
 
   const handleLogout = async () => {
     try {
-      // Clear local storage
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      const { error } = await supabase.auth.signOut();
       
-      // Update state
-      setIsLoggedIn(false);
-      setUserInfo(null);
-      setShowProfile(false);
-      
-      // Redirect to login
-      router.push('/login');
-      router.refresh();
-      
-      console.log('User logged out successfully'); // Debug log
+      if (error) {
+        console.error('Logout error:', error);
+      } else {
+        // State will be updated automatically by onAuthStateChange
+        router.push('/login');
+        console.log('User logged out successfully');
+      }
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -102,6 +87,16 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showProfile]);
 
+  if (loading) {
+    return (
+      <nav className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-8 py-4 shadow-xl rounded-b-2xl">
+        <div className="container mx-auto flex justify-center items-center">
+          <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-400 text-white px-8 py-4 shadow-xl rounded-b-2xl">
       <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
@@ -112,9 +107,6 @@ function Navbar() {
           <Link href="/" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
             Home
           </Link>
-          {/* <Link href="/dashboard" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
-            Dashboard
-          </Link> */}
           <Link href="/about" className="hover:underline hover:text-pink-200 transition duration-200 text-lg font-medium">
             About
           </Link>
@@ -184,13 +176,6 @@ function Navbar() {
           )}
         </div>
       </div>
-      
-      {/* Debug info - remove in production
-      {process.env.NODE_ENV === 'development' && (
-        <div className="text-xs bg-black/20 px-2 py-1 rounded mt-2">
-          Debug: Logged in: {isLoggedIn.toString()} | User: {userInfo?.email || 'None'}
-        </div>
-      )} */}
     </nav>
   );
 }
