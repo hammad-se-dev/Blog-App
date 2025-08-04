@@ -24,6 +24,7 @@
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hook-form": "^7.61.1",
+    "styled-components": "^6.1.19",
     "uuid": "^11.1.0",
     "yup": "^1.6.1",
     "zustand": "^5.0.6"

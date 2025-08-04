@@ -1,8 +1,8 @@
-// app/page.jsx
 'use client';
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Loader from './components/Loader'; // Custom loader component
 
 export default function Home() {
   const router = useRouter();
@@ -20,5 +20,10 @@ export default function Home() {
     checkSession();
   }, [router]);
 
-  return <p>Loading...</p>;
+  return (
+
+    <div className="min-h-screen flex items-center justify-center ">
+      <Loader />
+    </div>
+  );
 }
