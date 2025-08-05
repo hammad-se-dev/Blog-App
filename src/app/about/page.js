@@ -12,7 +12,7 @@ export default function About() {
           <div className="w-1/2 h-1 bg-gradient-to-r from-indigo-200 via-purple-200 to-pink-200 rounded-full" />
         </div>
         <p className="text-indigo-700 font-semibold">
-          Built with ❤️ using Next.js, Supabase, and TanStack Query.
+          Built with ❤️ using Next.js, Mongodb, and TanStack Query.
         </p>
       </div>
     </main>
