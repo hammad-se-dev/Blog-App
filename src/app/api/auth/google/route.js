@@ -2,33 +2,29 @@
 import { NextResponse } from 'next/server';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const type = searchParams.get('type') || 'login';
   
-  // Debug: Log environment and request details
-  console.log('=== DEBUG INFO ===');
-  console.log('NEXTAUTH_URL from env:', process.env.NEXTAUTH_URL);
-  console.log('Request host:', request.headers.get('host'));
-  console.log('Request protocol:', request.headers.get('x-forwarded-proto'));
-  console.log('Request URL:', request.url);
+  // 🔍 DEBUGGING: Log all relevant information
+  console.log('=== OAUTH DEBUG INFO ===');
+  console.log('Environment Variables:');
+  console.log('- NEXTAUTH_URL:', process.env.NEXTAUTH_URL);
+  console.log('- NODE_ENV:', process.env.NODE_ENV);
+  console.log('- GOOGLE_CLIENT_ID:', GOOGLE_CLIENT_ID);
   
-  // Build redirect URI - use multiple fallback methods
-  let REDIRECT_URI;
+  console.log('Request Headers:');
+  console.log('- host:', request.headers.get('host'));
+  console.log('- x-forwarded-proto:', request.headers.get('x-forwarded-proto'));
+  console.log('- x-forwarded-host:', request.headers.get('x-forwarded-host'));
+  console.log('- origin:', request.headers.get('origin'));
   
-  if (process.env.NEXTAUTH_URL) {
-    REDIRECT_URI = process.env.NEXTAUTH_URL + '/api/auth/google/callback';
-  } else {
-    // Fallback: build from request
-    const host = request.headers.get('host');
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    REDIRECT_URI = `${protocol}://${host}/api/auth/google/callback`;
-  }
+  // Build the redirect URI
+  const REDIRECT_URI = process.env.NEXTAUTH_URL + '/api/auth/google/callback';
   
-  console.log('Final REDIRECT_URI:', REDIRECT_URI);
-  console.log('==================');
+  console.log('Constructed REDIRECT_URI:', REDIRECT_URI);
+  console.log('========================');
   
   // Store the type in the state parameter
   const state = Buffer.from(JSON.stringify({ type })).toString('base64');
