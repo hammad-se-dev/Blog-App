@@ -13,11 +13,11 @@ if (process.env.NODE_ENV === 'production' && BASE_URL.includes('localhost')) {
 
 export async function getPosts() {
   try {
-    const response = await fetch(`${BASE_URL}/api/posts`, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      cache: 'no-store',
-    });
+    const response = await fetch(`${BASE_URL}/api/posts`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 60 }, // Cache for 60 seconds
+    });
 
     if (!response.ok) {
       console.error(`Failed to fetch posts: ${response.status} ${response.statusText}`);
@@ -42,11 +42,11 @@ export async function getPostById(id) {
     const fetchUrl = `${BASE_URL}/api/posts/${id}`;
     console.log(`Fetching post from: ${fetchUrl}`); // Debug log to see the URL
 
-    const response = await fetch(fetchUrl, {
-      method: 'GET',
-      headers: { 'Content-Type': 'application/json' },
-      cache: 'no-store',
-    });
+    const response = await fetch(fetchUrl, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      next: { revalidate: 300 }, // Cache for 5 minutes since individual posts change less frequently
+    });
 
     if (!response.ok) {
       console.error(`Failed to fetch post ${id}: ${response.status} ${response.statusText}`);

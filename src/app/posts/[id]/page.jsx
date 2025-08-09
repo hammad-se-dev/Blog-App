@@ -1,29 +1,141 @@
 // /src/app/posts/[id]/page.jsx
-import { getPostById } from '../../data/posts';
-import { notFound } from 'next/navigation';
+import { connectDB } from "@/lib/mongodb";
+import Post from "@/models/post";
+import { notFound } from "next/navigation";
 
-export default async function Post({ params }) {
+// Enable static generation with ISR for better performance
+export const revalidate = 300; // Revalidate every 5 minutes
+
+export default async function BlogPost({ params }) {
   const asyncParams = await params;
-  const post = await getPostById(asyncParams.id);
+
+  // Query database directly instead of making API call
+  await connectDB();
+  const post = await Post.findById(asyncParams.id).lean(); // .lean() for better performance
 
   if (!post) {
     notFound();
   }
 
+  // Calculate reading time and word count
+  const wordCount = post.content?.split(" ").length || 0;
+  const readingTime = Math.ceil(wordCount / 200);
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 py-12 px-4">
-      <div className="w-full max-w-2xl bg-white/90 p-10 rounded-3xl shadow-2xl border border-indigo-100">
-        <h2 className="text-4xl font-extrabold mb-6 text-transparent bg-clip-text bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600 tracking-tight drop-shadow">
-          {post.title}
-        </h2>
-        <p className="text-gray-700 mb-8 text-lg leading-relaxed whitespace-pre-line">
-          {post.content}
-        </p>
-        <a href="/" className="inline-block bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:from-indigo-700 hover:to-pink-600 transition-all duration-200 text-lg">
-          &larr; Back to Home
-        </a>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
+      {/* Hero Section */}
+      <div className="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-20 px-4">
+        <div className="container mx-auto max-w-4xl">
+          <div className="text-center mb-8">
+            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-blue-200 leading-tight">
+              {post.title}
+            </h1>
+            <div className="flex justify-center items-center gap-6 text-purple-200">
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>{readingTime} min read</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                  />
+                </svg>
+                <span>{wordCount} words</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Article Content */}
+      <div className="container mx-auto max-w-4xl px-4 py-12">
+        <article className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+          <div className="p-8 md:p-12">
+            <div className="prose prose-lg prose-gray max-w-none">
+              <div className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
+                {post.content}
+              </div>
+            </div>
+          </div>
+
+          {/* Article Footer */}
+          <div className="bg-gray-50 px-8 md:px-12 py-6 border-t border-gray-100">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+              <div className="text-sm text-gray-500">
+                Published on{" "}
+                {new Date(post.createdAt).toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric",
+                })}
+                {post.updatedAt !== post.createdAt && (
+                  <span className="ml-2 text-purple-600">
+                    • Updated {new Date(post.updatedAt).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+              <div className="flex gap-3">
+                <a
+                  href="/dashboard"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                    />
+                  </svg>
+                  Back to Posts
+                </a>
+              </div>
+            </div>
+          </div>
+        </article>
       </div>
     </div>
   );
 }
-
