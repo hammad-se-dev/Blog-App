@@ -172,6 +172,12 @@ function Navbar() {
         {/* Navigation Links - Desktop */}
         <div className="hidden md:flex items-center gap-2 relative">
           <Link
+            href="/dashboard"
+            className="px-4 py-2 rounded-full hover:bg-white/10 transition-all duration-300 text-lg font-medium hover:text-purple-200 hover:shadow-lg transform hover:scale-105"
+          >
+            Home
+          </Link>
+          <Link
             href="/about"
             className="px-4 py-2 rounded-full hover:bg-white/10 transition-all duration-300 text-lg font-medium hover:text-purple-200 hover:shadow-lg transform hover:scale-105"
           >
@@ -264,6 +270,13 @@ function Navbar() {
         {isMobileMenuOpen && (
           <div className="md:hidden w-full mt-4 py-4 border-t border-purple-500/20">
             <div className="flex flex-col space-y-3">
+              <Link
+                href="/home"
+                className="px-4 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200 text-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Home
+              </Link>
               <Link
                 href="/about"
                 className="px-4 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200 text-center"
