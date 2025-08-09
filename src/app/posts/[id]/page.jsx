@@ -24,13 +24,13 @@ export default async function BlogPost({ params }) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-20 px-4">
+      <div className="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-12 md:py-20 px-4">
         <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-6xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-blue-200 leading-tight">
+          <div className="text-center mb-6 md:mb-8">
+            <h1 className="text-2xl md:text-4xl lg:text-6xl font-extrabold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-blue-200 leading-tight">
               {post.title}
             </h1>
-            <div className="flex justify-center items-center gap-6 text-purple-200">
+            <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 text-purple-200">
               <div className="flex items-center gap-2">
                 <svg
                   className="w-5 h-5"
@@ -85,20 +85,20 @@ export default async function BlogPost({ params }) {
       </div>
 
       {/* Article Content */}
-      <div className="container mx-auto max-w-4xl px-4 py-12">
+      <div className="container mx-auto max-w-4xl px-4 py-8 md:py-12">
         <article className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
-          <div className="p-8 md:p-12">
-            <div className="prose prose-lg prose-gray max-w-none">
-              <div className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">
+          <div className="p-6 md:p-8 lg:p-12">
+            <div className="prose prose-base md:prose-lg prose-gray max-w-none">
+              <div className="text-gray-700 text-base md:text-lg leading-relaxed whitespace-pre-line">
                 {post.content}
               </div>
             </div>
           </div>
 
           {/* Article Footer */}
-          <div className="bg-gray-50 px-8 md:px-12 py-6 border-t border-gray-100">
+          <div className="bg-gray-50 px-6 md:px-8 lg:px-12 py-4 md:py-6 border-t border-gray-100">
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-              <div className="text-sm text-gray-500">
+              <div className="text-xs md:text-sm text-gray-500 text-center sm:text-left">
                 Published on{" "}
                 {new Date(post.createdAt).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -106,18 +106,18 @@ export default async function BlogPost({ params }) {
                   day: "numeric",
                 })}
                 {post.updatedAt !== post.createdAt && (
-                  <span className="ml-2 text-purple-600">
+                  <span className="block sm:inline sm:ml-2 text-purple-600">
                     • Updated {new Date(post.updatedAt).toLocaleDateString()}
                   </span>
                 )}
               </div>
-              <div className="flex gap-3">
+              <div className="flex justify-center sm:justify-end">
                 <a
                   href="/dashboard"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+                  className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105 text-sm md:text-base"
                 >
                   <svg
-                    className="w-4 h-4"
+                    className="w-3 md:w-4 h-3 md:h-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

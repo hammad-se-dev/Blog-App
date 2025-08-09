@@ -12,6 +12,7 @@ function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     // Check if user is logged in by looking for token and user data
@@ -104,29 +105,72 @@ function Navbar() {
   }, [showProfile]);
 
   return (
-    <nav className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white px-8 py-6 shadow-2xl border-b border-purple-500/20 backdrop-blur-lg">
-      <div className="container mx-auto flex flex-col sm:flex-row justify-between items-center">
-        <div className="flex items-center gap-3 mb-2 sm:mb-0">
-          {/* Blog Logo/Icon */}
-          
-          <h1 className="text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-purple-200 drop-shadow-lg">
+    <nav className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white px-4 md:px-8 py-4 md:py-6 shadow-2xl border-b border-purple-500/20 backdrop-blur-lg">
+      <div className="container mx-auto flex flex-wrap justify-between items-center">
+        {/* Logo Section - Make it clickable to go to dashboard */}
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-3 mb-2 sm:mb-0 hover:opacity-80 transition-opacity"
+        >
+          <div className="w-8 md:w-10 h-8 md:h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-lg">
+            <svg
+              className="w-5 md:w-6 h-5 md:h-6 text-white"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fillRule="evenodd"
+                d="M2 5a2 2 0 012-2h8a2 2 0 012 2v10a2 2 0 002 2H4a2 2 0 01-2-2V5zm3 1h6v4H5V6zm6 6H5v2h6v-2z"
+                clipRule="evenodd"
+              />
+              <path d="M15 7h1a2 2 0 012 2v5.5a1.5 1.5 0 01-3 0V9a1 1 0 00-1-1h-1v3a2 2 0 11-4 0V9a1 1 0 00-1-1H7v3a2 2 0 11-4 0V9a2 2 0 012-2h1V5a2 2 0 012-2h8a2 2 0 012 2v2z" />
+            </svg>
+          </div>
+          <h1 className="text-xl md:text-3xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-purple-200 drop-shadow-lg">
             BlogSpace
           </h1>
+        </Link>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden flex items-center gap-2">
+          {/* Mobile Search Icon */}
+          <div className="lg:hidden">
+            <NavbarSearch />
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="p-2 rounded-lg hover:bg-white/10 transition-colors duration-200"
+            aria-label="Toggle mobile menu"
+          >
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              {isMobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
         </div>
 
-        <div className="flex items-center gap-2 relative">
-          <Link
-            href="/"
-            className="px-4 py-2 rounded-full hover:bg-white/10 transition-all duration-300 text-lg font-medium hover:text-purple-200 hover:shadow-lg transform hover:scale-105"
-          >
-            Home
-          </Link>
-          <Link
-            href="/dashboard"
-            className="px-4 py-2 rounded-full hover:bg-white/10 transition-all duration-300 text-lg font-medium hover:text-purple-200 hover:shadow-lg transform hover:scale-105"
-          >
-            Dashboard
-          </Link>
+        {/* Navigation Links - Desktop */}
+        <div className="hidden md:flex items-center gap-2 relative">
           <Link
             href="/about"
             className="px-4 py-2 rounded-full hover:bg-white/10 transition-all duration-300 text-lg font-medium hover:text-purple-200 hover:shadow-lg transform hover:scale-105"
@@ -134,21 +178,23 @@ function Navbar() {
             About
           </Link>
 
-          {/* Search functionality */}
-          <NavbarSearch />
+          {/* Search functionality - Hidden on small screens */}
+          <div className="hidden lg:block">
+            <NavbarSearch />
+          </div>
 
-          {/* Show login/signup links when not logged in */}
+          {/* Auth Links - Desktop */}
           {!isLoggedIn ? (
             <>
               <Link
                 href="/login"
-                className="bg-white/10 hover:bg-white/20 text-white px-6 py-2.5 rounded-full transition-all duration-300 font-medium backdrop-blur-sm border border-white/20 hover:border-white/40 hover:shadow-lg transform hover:scale-105"
+                className="bg-white/10 hover:bg-white/20 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full transition-all duration-300 font-medium backdrop-blur-sm border border-white/20 hover:border-white/40 hover:shadow-lg transform hover:scale-105 text-sm md:text-base"
               >
                 Login
               </Link>
               <Link
                 href="/signup"
-                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6 py-2.5 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/50"
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 md:px-6 py-2 md:py-2.5 rounded-full transition-all duration-300 font-medium shadow-lg hover:shadow-xl transform hover:scale-105 border border-purple-400/50 text-sm md:text-base"
               >
                 Sign Up
               </Link>
@@ -214,6 +260,65 @@ function Navbar() {
             </div>
           )}
         </div>
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden w-full mt-4 py-4 border-t border-purple-500/20">
+            <div className="flex flex-col space-y-3">
+              <Link
+                href="/about"
+                className="px-4 py-2 rounded-lg hover:bg-white/10 transition-colors duration-200 text-center"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </Link>
+
+              {!isLoggedIn ? (
+                <div className="flex flex-col space-y-2 px-4">
+                  <Link
+                    href="/login"
+                    className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full transition-all duration-300 font-medium backdrop-blur-sm border border-white/20 text-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    href="/signup"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-4 py-2 rounded-full transition-all duration-300 font-medium shadow-lg text-center"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Sign Up
+                  </Link>
+                </div>
+              ) : (
+                <div className="px-4">
+                  <div className="flex items-center gap-3 mb-3 p-3 bg-white/10 rounded-lg">
+                    <span className="w-10 h-10 rounded-full bg-purple-300 flex items-center justify-center font-bold text-purple-900">
+                      {userInfo?.email?.[0]?.toUpperCase() || "U"}
+                    </span>
+                    <div>
+                      <div className="font-semibold">
+                        {userInfo?.email?.split("@")[0] || "User"}
+                      </div>
+                      <div className="text-sm text-purple-200">
+                        {userInfo?.email}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full transition-colors duration-200"
+                  >
+                    <LogOutIcon className="w-4 h-4" />
+                    Logout
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Debug info - remove in production

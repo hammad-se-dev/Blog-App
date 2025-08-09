@@ -151,7 +151,7 @@ export default function NavbarSearch() {
         ) : (
           // Expanded Search Input
           <div className="relative">
-            <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 min-w-[300px]">
+            <div className="flex items-center bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 min-w-[250px] md:min-w-[300px]">
               <svg
                 className="w-5 h-5 text-white/70 mr-3"
                 fill="none"
@@ -200,7 +200,7 @@ export default function NavbarSearch() {
 
       {/* Search Results Dropdown */}
       {showResults && (
-        <div className="absolute right-0 top-12 w-96 max-w-[90vw] bg-white rounded-xl shadow-2xl border border-gray-200 z-[60] max-h-80 overflow-hidden">
+        <div className="absolute right-0 md:right-0 left-0 md:left-auto top-12 w-full md:w-96 max-w-[95vw] md:max-w-[90vw] bg-white rounded-xl shadow-2xl border border-gray-200 z-[60] max-h-80 overflow-hidden">
           <div className="p-3">
             {/* Loading State */}
             {isSearching && (

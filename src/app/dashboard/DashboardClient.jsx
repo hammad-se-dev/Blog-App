@@ -124,43 +124,51 @@ export default function DashboardClient() {
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
       {/* Hero Section */}
       {!isSearchMode && (
-        <div className="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-20 px-4">
+        <div className="bg-gradient-to-r from-purple-900 via-blue-900 to-indigo-900 text-white py-12 md:py-20 px-4">
           <div className="container mx-auto text-center">
             <div className="max-w-4xl mx-auto">
-              <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-blue-200">
+              <h1 className="text-3xl md:text-5xl lg:text-7xl font-extrabold mb-4 md:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-purple-200 via-pink-200 to-blue-200 leading-tight">
                 Welcome to BlogSpace
               </h1>
-              <p className="text-xl md:text-2xl text-purple-200 mb-8 leading-relaxed">
+              <p className="text-lg md:text-xl lg:text-2xl text-purple-200 mb-6 md:mb-8 leading-relaxed px-4">
                 Discover amazing stories, share your thoughts, and connect with
                 fellow writers
               </p>
-              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-6 border border-white/20 animate-float shadow-2xl">
-                  <div className="text-4xl font-bold text-white mb-2">
+              <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center">
+                <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 md:px-8 py-4 md:py-6 border border-white/20 animate-float shadow-2xl">
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1 md:mb-2">
                     {postList.length}
                   </div>
-                  <div className="text-purple-200 text-lg">Total Posts</div>
+                  <div className="text-purple-200 text-base md:text-lg">
+                    Total Posts
+                  </div>
                 </div>
                 {userId && (
                   <div
-                    className="bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-6 border border-white/20 animate-float shadow-2xl"
+                    className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 md:px-8 py-4 md:py-6 border border-white/20 animate-float shadow-2xl"
                     style={{ animationDelay: "1s" }}
                   >
-                    <div className="text-4xl font-bold text-white mb-2">
+                    <div className="text-3xl md:text-4xl font-bold text-white mb-1 md:mb-2">
                       {
                         postList.filter((post) => post.user_id === userId)
                           .length
                       }
                     </div>
-                    <div className="text-purple-200 text-lg">Your Posts</div>
+                    <div className="text-purple-200 text-base md:text-lg">
+                      Your Posts
+                    </div>
                   </div>
                 )}
                 <div
-                  className="bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-6 border border-white/20 animate-float shadow-2xl"
+                  className="bg-white/10 backdrop-blur-sm rounded-2xl px-6 md:px-8 py-4 md:py-6 border border-white/20 animate-float shadow-2xl"
                   style={{ animationDelay: "2s" }}
                 >
-                  <div className="text-4xl font-bold text-white mb-2">✨</div>
-                  <div className="text-purple-200 text-lg">Keep Writing</div>
+                  <div className="text-3xl md:text-4xl font-bold text-white mb-1 md:mb-2">
+                    ✨
+                  </div>
+                  <div className="text-purple-200 text-base md:text-lg">
+                    Keep Writing
+                  </div>
                 </div>
               </div>
             </div>
@@ -168,14 +176,14 @@ export default function DashboardClient() {
         </div>
       )}
 
-      <div className="container mx-auto p-4">
-        <div className="flex flex-wrap gap-4 justify-between items-center mb-8 mt-8">
-          <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-700 to-indigo-700 drop-shadow-lg tracking-tight">
+      <div className="container mx-auto p-4 md:p-6">
+        <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center mb-6 md:mb-8 mt-4 md:mt-8">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-700 via-pink-700 to-indigo-700 drop-shadow-lg tracking-tight">
             {displayTitle}
           </h2>
-          <div className="flex gap-4 items-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch sm:items-center w-full md:w-auto">
             <button
-              className={`px-8 py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 shadow-lg
+              className={`px-4 md:px-8 py-2 md:py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 shadow-lg text-sm md:text-base
               ${
                 showMyBlogs
                   ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-purple-200 animate-pulse-gentle"
@@ -194,7 +202,7 @@ export default function DashboardClient() {
             >
               <span className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5"
+                  className="w-4 md:w-5 h-4 md:h-5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -206,11 +214,16 @@ export default function DashboardClient() {
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                   />
                 </svg>
-                {showMyBlogs ? "Show All Blogs" : "Show My Blogs"}
+                <span className="hidden sm:inline">
+                  {showMyBlogs ? "Show All Blogs" : "Show My Blogs"}
+                </span>
+                <span className="sm:hidden">
+                  {showMyBlogs ? "All" : "My Blogs"}
+                </span>
               </span>
             </button>
             <button
-              className={`flex items-center gap-3 px-8 py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 shadow-lg
+              className={`flex items-center justify-center gap-2 md:gap-3 px-4 md:px-8 py-2 md:py-3 rounded-full font-bold transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 shadow-lg text-sm md:text-base
               ${
                 showForm
                   ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-red-200 hover:from-red-600 hover:to-pink-600"
@@ -227,7 +240,7 @@ export default function DashboardClient() {
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className={`w-5 h-5 transition-transform duration-300 ${
+                className={`w-4 md:w-5 h-4 md:h-5 transition-transform duration-300 ${
                   showForm ? "rotate-45" : ""
                 }`}
               >
@@ -237,7 +250,10 @@ export default function DashboardClient() {
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              {showForm ? "Cancel" : "Add New Blog"}
+              <span className="hidden sm:inline">
+                {showForm ? "Cancel" : "Add New Blog"}
+              </span>
+              <span className="sm:hidden">{showForm ? "Cancel" : "Add"}</span>
             </button>
           </div>
         </div>
@@ -295,7 +311,7 @@ export default function DashboardClient() {
               : "No blog posts yet."}
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+          <div className="grid gap-4 md:gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-stretch">
             {displayPosts.map((post) => {
               // Calculate reading time (average 200 words per minute)
               const wordCount = post.content?.split(" ").length || 0;
@@ -305,16 +321,16 @@ export default function DashboardClient() {
                 <article key={post._id} className="relative group h-full">
                   <div className="h-full flex flex-col bg-white rounded-2xl shadow-lg border border-gray-100 group relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:border-purple-200">
                     {/* Card Header with Gradient */}
-                    <div className="h-32 bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400 relative overflow-hidden">
+                    <div className="h-24 md:h-32 bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400 relative overflow-hidden">
                       <div className="absolute inset-0 bg-black/20"></div>
-                      <div className="absolute top-4 right-4">
+                      <div className="absolute top-2 md:top-4 right-2 md:right-4">
                         {/* Reading Time Badge */}
-                        <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-3 py-1 rounded-full border border-white/30">
+                        <span className="bg-white/20 backdrop-blur-sm text-white text-xs px-2 md:px-3 py-1 rounded-full border border-white/30">
                           {readingTime} min read
                         </span>
                       </div>
-                      <div className="absolute bottom-4 left-4 right-16">
-                        <h3 className="text-xl font-bold text-white line-clamp-2 leading-tight">
+                      <div className="absolute bottom-2 md:bottom-4 left-2 md:left-4 right-12 md:right-16">
+                        <h3 className="text-lg md:text-xl font-bold text-white line-clamp-2 leading-tight">
                           <Link
                             href={`/posts/${post._id}`}
                             className="hover:text-purple-200 transition-colors"
@@ -326,17 +342,17 @@ export default function DashboardClient() {
                     </div>
 
                     {/* Card Content */}
-                    <div className="flex-1 p-6">
+                    <div className="flex-1 p-4 md:p-6">
                       {/* Action Buttons */}
                       {showMyBlogs && userId && post.user_id === userId && (
-                        <div className="flex gap-2 justify-end mb-4">
+                        <div className="flex gap-2 justify-end mb-3 md:mb-4">
                           <button
                             onClick={() => handleEdit(post)}
-                            className="bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg p-2 transition-colors duration-200 shadow-sm"
+                            className="bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg p-1.5 md:p-2 transition-colors duration-200 shadow-sm"
                             title="Edit Blog"
                           >
                             <svg
-                              className="w-4 h-4"
+                              className="w-3 md:w-4 h-3 md:h-4"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -352,11 +368,11 @@ export default function DashboardClient() {
                           <button
                             onClick={() => handleDelete(post._id)}
                             disabled={isDeleting}
-                            className="bg-red-100 hover:bg-red-200 text-red-700 rounded-lg p-2 transition-colors duration-200 shadow-sm disabled:opacity-50"
+                            className="bg-red-100 hover:bg-red-200 text-red-700 rounded-lg p-1.5 md:p-2 transition-colors duration-200 shadow-sm disabled:opacity-50"
                             title="Delete Blog"
                           >
                             <svg
-                              className="w-4 h-4"
+                              className="w-3 md:w-4 h-3 md:h-4"
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
