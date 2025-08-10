@@ -81,12 +81,15 @@ export default function SignUpForm() {
           type="button"
           onClick={handleGoogleSignUp}
           disabled={googleLoading || loading}
-          className="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 transition-all duration-200 text-lg flex justify-center items-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full bg-white border-2 border-slate-200 text-slate-700 font-semibold py-4 px-6 rounded-2xl shadow-sm hover:shadow-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-300 text-lg flex justify-center items-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed group"
         >
           {googleLoading ? (
-            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5 group-hover:scale-110 transition-transform duration-200"
+              viewBox="0 0 24 24"
+            >
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -111,10 +114,12 @@ export default function SignUpForm() {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full border-t border-slate-200"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white/90 text-gray-500 font-medium">Or continue with email</span>
+            <span className="px-4 bg-white/90 text-slate-500 font-medium">
+              Or continue with email
+            </span>
           </div>
         </div>
 
@@ -122,7 +127,7 @@ export default function SignUpForm() {
         <div>
           <label
             htmlFor="name"
-            className="block text-sm font-semibold text-indigo-700 mb-2"
+            className="block text-sm font-semibold text-slate-700 mb-2"
           >
             Name
           </label>
@@ -131,7 +136,7 @@ export default function SignUpForm() {
             type="text"
             {...register("name")}
             placeholder="Ron Larson"
-            className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
+            className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-slate-50 placeholder:text-slate-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200"
           />
           <p className="text-red-500 text-sm">{errors.name?.message}</p>
         </div>
@@ -140,7 +145,7 @@ export default function SignUpForm() {
         <div>
           <label
             htmlFor="email"
-            className="block text-sm font-semibold text-indigo-700 mb-2"
+            className="block text-sm font-semibold text-slate-700 mb-2"
           >
             Email
           </label>
@@ -148,7 +153,7 @@ export default function SignUpForm() {
             id="email"
             type="email"
             {...register("email")}
-            className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
+            className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-slate-50 placeholder:text-slate-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200"
             placeholder="you@example.com"
           />
           <p className="text-red-500 text-sm">{errors.email?.message}</p>
@@ -158,7 +163,7 @@ export default function SignUpForm() {
         <div>
           <label
             htmlFor="password"
-            className="block text-sm font-semibold text-indigo-700 mb-2"
+            className="block text-sm font-semibold text-slate-700 mb-2"
           >
             Password
           </label>
@@ -166,7 +171,7 @@ export default function SignUpForm() {
             id="password"
             type="password"
             {...register("password")}
-            className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
+            className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-slate-50 placeholder:text-slate-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200"
             placeholder="••••••••"
           />
           <p className="text-red-500 text-sm">{errors.password?.message}</p>
@@ -182,7 +187,7 @@ export default function SignUpForm() {
         {/* Submit Button */}
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-indigo-700 hover:to-pink-600 transition-all duration-200 text-lg flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-emerald-600 via-emerald-700 to-teal-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-2xl hover:from-emerald-700 hover:via-emerald-800 hover:to-teal-800 transform hover:-translate-y-1 transition-all duration-300 text-lg flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none group"
           disabled={loading || googleLoading}
         >
           {loading && (
@@ -192,11 +197,11 @@ export default function SignUpForm() {
         </button>
 
         {/* Redirect to login */}
-        <p className="text-sm text-center text-gray-600 mt-4">
+        <p className="text-sm text-center text-slate-600 mt-4">
           Already have an account?{" "}
           <a
             href="/login"
-            className="text-indigo-600 hover:underline font-semibold"
+            className="text-emerald-600 hover:text-emerald-700 hover:underline font-semibold transition-colors duration-200"
           >
             Log in
           </a>

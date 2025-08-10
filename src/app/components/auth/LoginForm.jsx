@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -16,32 +16,35 @@ export default function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-  
+
     try {
-      const res = await fetch('/api/login', {
-        method: 'POST',
+      const res = await fetch("/api/login", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await res.json();
       setLoading(false);
-  
+
       if (!res.ok) return setError(data.error);
-      
+
       // Store both token and user data properly
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify({
-        id: data.userId,
-        email: email
-      }));
-      
-      router.push('/dashboard');
+      localStorage.setItem("token", data.token);
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          id: data.userId,
+          email: email,
+        })
+      );
+
+      router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError('Something went wrong.');
+      setError("Something went wrong.");
       setLoading(false);
     }
   };
@@ -71,12 +74,15 @@ export default function LoginForm() {
           type="button"
           onClick={handleGoogleLogin}
           disabled={googleLoading || loading}
-          className="w-full bg-white border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-xl shadow-md hover:shadow-lg hover:border-gray-400 transition-all duration-200 text-lg flex justify-center items-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full bg-white border-2 border-slate-200 text-slate-700 font-semibold py-4 px-6 rounded-2xl shadow-sm hover:shadow-xl hover:border-slate-300 hover:bg-slate-50 transition-all duration-300 text-lg flex justify-center items-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed group"
         >
           {googleLoading ? (
-            <div className="w-5 h-5 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+            <div className="w-5 h-5 border-2 border-slate-400 border-t-transparent rounded-full animate-spin"></div>
           ) : (
-            <svg className="w-5 h-5" viewBox="0 0 24 24">
+            <svg
+              className="w-5 h-5 group-hover:scale-110 transition-transform duration-200"
+              viewBox="0 0 24 24"
+            >
               <path
                 fill="#4285F4"
                 d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -101,55 +107,70 @@ export default function LoginForm() {
         {/* Divider */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300"></div>
+            <div className="w-full border-t border-slate-200"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-white/90 text-gray-500 font-medium">Or continue with email</span>
+            <span className="px-4 bg-white/90 text-slate-500 font-medium">
+              Or continue with email
+            </span>
           </div>
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-indigo-700 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
             Email
           </label>
           <input
             id="email"
             type="email"
             required
-            className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
+            className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-slate-50 placeholder:text-slate-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
           />
         </div>
         <div>
-          <label htmlFor="password" className="block text-sm font-semibold text-indigo-700 mb-2">
+          <label
+            htmlFor="password"
+            className="block text-sm font-semibold text-slate-700 mb-2"
+          >
             Password
           </label>
           <input
             id="password"
             type="password"
             required
-            className="w-full px-4 py-3 border-2 border-indigo-100 rounded-xl bg-indigo-50 placeholder:text-indigo-300 text-lg focus:outline-none focus:ring-2 focus:ring-pink-100 focus:border-pink-400 transition"
+            className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl bg-slate-50 placeholder:text-slate-400 text-lg focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all duration-200"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
           />
         </div>
-        {error && <p className="text-sm text-red-500 text-center font-semibold">{error}</p>}
+        {error && (
+          <p className="text-sm text-red-500 text-center font-semibold">
+            {error}
+          </p>
+        )}
         <button
           type="submit"
-          className="w-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-indigo-700 hover:to-pink-600 transition-all duration-200 text-lg flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 text-white font-bold py-4 px-6 rounded-2xl shadow-lg hover:shadow-2xl hover:from-blue-700 hover:via-blue-800 hover:to-indigo-800 transform hover:-translate-y-1 transition-all duration-300 text-lg flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none group"
           disabled={loading || googleLoading}
         >
           {loading && (
             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           )}
-          {loading ? 'Logging in...' : 'Log In'}
+          {loading ? "Logging in..." : "Log In"}
         </button>
-        <p className="text-sm text-center text-gray-600 mt-4">
-          Don&apos;t have an account?{' '}
-          <Link href="/signup" className="text-indigo-600 hover:underline font-semibold">
+        <p className="text-sm text-center text-slate-600 mt-4">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/signup"
+            className="text-blue-600 hover:text-blue-700 hover:underline font-semibold transition-colors duration-200"
+          >
             Sign up
           </Link>
         </p>
