@@ -35,7 +35,8 @@ export async function GET(request) {
 
   try {
     // Decode the state to get the original type (login/signup)
-    const { type } = JSON.parse(Buffer.from(state, 'base64').toString());
+    const decodedState = JSON.parse(Buffer.from(state, 'base64').toString());
+    const { type } = decodedState;
     
     // Exchange code for access token
     const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
